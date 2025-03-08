@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Propiedades</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Buscador de Propiedades en Idealista</h1>
+    <form id="searchForm">
+        <label for="center">Coordenadas (lat, lon):</label>
+        <input type="text" id="center" name="center" placeholder="Ej: 40.4168,-3.7038" required>
+
+        <label for="propertyType">Tipo de propiedad:</label>
+        <select id="propertyType" name="propertyType" required>
+            <option value="homes">Viviendas</option>
+            <option value="offices">Oficinas</option>
+            <option value="premises">Locales</option>
+            <option value="garages">Garajes</option>
+            <option value="bedrooms">Habitaciones</option>
+        </select>
+
+        <label for="distance">Distancia (metros):</label>
+        <input type="number" id="distance" name="distance" placeholder="Ej: 10000" required>
+
+        <label for="operation">Operación:</label>
+        <select id="operation" name="operation" required>
+            <option value="sale">Venta</option>
+            <option value="rent">Alquiler</option>
+        </select>
+
+        <label for="maxPrice">Precio máximo:</label>
+        <input type="number" id="maxPrice" name="maxPrice" placeholder="Ej: 300000">
+
+        <label for="minSize">Tamaño mínimo (m²):</label>
+        <input type="number" id="minSize" name="minSize" placeholder="Ej: 100">
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    <h2>Resultados de la Búsqueda</h2>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Dirección</th>
+                <th>Tipo</th>
+                <th>Precio</th>
+                <th>Tamaño (m²)</th>
+                <th>Habitaciones</th>
+                <th>Baños</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los resultados se insertarán aquí -->
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById("searchForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const searchParams = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch("http://localhost:3000/search", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(searchParams)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // Mostrar los resultados en la tabla
+                const tableBody = document.querySelector("#resultsTable tbody");
+                tableBody.innerHTML = ""; // Limpiar la tabla
+
+                data.elementList.forEach(property => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${property.address || "N/A"}</td>
+                        <td>${property.propertyType || "N/A"}</td>
+                        <td>${property.price ? `${property.price} €` : "N/A"}</td>
+                        <td>${property.size || "N/A"}</td>
+                        <td>${property.rooms || "N/A"}</td>
+                        <td>${property.bathrooms || "N/A"}</td>
+                        <td><a href="${property.url}" target="_blank">Ver en Idealista</a></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al realizar la búsqueda. Por favor, inténtalo de nuevo.");
+            }
+        });
+    </script>
+</body>
+</html>
