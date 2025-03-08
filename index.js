@@ -4,6 +4,9 @@ import axios from "axios";
 import FormData from "form-data";
 import open from "open";
 import path from "path";
+import 'dotenv/config';
+
+const credentials = process.env.IDEALISTA_CREDENTIALS;
 
 const app = express();
 const PORT = 3000;
@@ -121,10 +124,10 @@ app.get("/search-coordinates", async (req, res) => {
 // Ruta para manejar la búsqueda
 app.post("/search", async (req, res) => {
     try {
-        const accessToken = await getAccessToken(); // Obtener el accessToken
+        
         const searchParams = req.body; // Obtener los parámetros de búsqueda del cuerpo de la solicitud
 
-        const results = await searchProperties(accessToken, searchParams); // Realizar la búsqueda
+        const results = await searchProperties(credentials, searchParams); // Realizar la búsqueda
         res.json(results); // Enviar los resultados como JSON
     } catch (error) {
         res.status(500).json({ error: "Error al realizar la búsqueda" });
