@@ -75,6 +75,48 @@ async function searchProperties(accessToken, searchParams) {
         throw error;
     }
 }
+async function getCoordinates(street) {
+    try {
+        // Hacer una solicitud a la API de OpenStreetMap Nominatim
+        const response = await axios.get("https://nominatim.openstreetmap.org/search", {
+            params: {
+                q: street, // La calle o dirección a buscar
+                format: "json", // Formato de respuesta
+                limit: 1, // Limitar a un resultado
+            },
+        });
+
+        // Verificar si se encontraron resultados
+        if (response.data.length === 0) {
+            throw new Error("No se encontraron resultados para la calle proporcionada.");
+        }
+
+        // Obtener la latitud y longitud del primer resultado
+        const { lat, lon } = response.data[0];
+
+        // Devolver las coordenadas en el formato "latitud,longitud"
+        return `${lat},${lon}`;
+    } catch (error) {
+        console.error("Error al buscar coordenadas:", error.message);
+        throw error;
+    }
+}
+
+// Ruta para buscar coordenadas
+app.get("/search-coordinates", async (req, res) => {
+    const { street } = req.query; // Obtener la calle desde los parámetros de la URL
+
+    if (!street) {
+        return res.status(400).json({ error: "El parámetro 'street' es requerido." });
+    }
+
+    try {
+        const coordinates = await getCoordinates(street);
+        res.json({ coordinates });
+    } catch (error) {
+        res.status(500).json({ error: "Error al buscar coordenadas." });
+    }
+});
 
 // Ruta para manejar la búsqueda
 app.post("/search", async (req, res) => {

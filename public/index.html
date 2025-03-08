@@ -4,103 +4,253 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador de Propiedades</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /* Paleta de colores */
+        :root {
+            --color-primary: #2c3e50;
+            --color-secondary: #ecf0f1;
+            --color-accent: #27ae60;
+            --color-text-primary: #333333;
+            --color-text-secondary: #7f8c8d;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: var(--color-secondary);
+            color: var(--color-text-primary);
+            font-family: 'Arial', sans-serif;
         }
-        form {
-            margin-bottom: 20px;
+
+        .navbar-custom {
+            background-color: var(--color-primary);
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: white !important;
         }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
+
+        .btn-custom {
+            background-color: var(--color-accent);
             border: none;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #219653;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--color-primary);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
+        }
+
+        .card-custom {
+            background-color: white;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: auto;
             cursor: pointer;
+            border-radius: 5px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .spinner-border {
+            display: none; /* Ocultar el spinner por defecto */
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        .modal-content {
+            border-radius: 10px;
         }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+
+        .modal-header {
+            background-color: var(--color-primary);
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
-        th {
-            background-color: #f4f4f4;
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+        .modal-body img {
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Buscador de Propiedades en Idealista</h1>
-    <form id="searchForm">
-        <label for="center">Coordenadas (lat, lon):</label>
-        <input type="text" id="center" name="center" placeholder="Ej: 40.4168,-3.7038" required>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="#">Buscador de Propiedades</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Acerca de</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-        <label for="propertyType">Tipo de propiedad:</label>
-        <select id="propertyType" name="propertyType" required>
-            <option value="homes">Viviendas</option>
-            <option value="offices">Oficinas</option>
-            <option value="premises">Locales</option>
-            <option value="garages">Garajes</option>
-            <option value="bedrooms">Habitaciones</option>
-        </select>
+    <!-- Contenido principal -->
+    <div class="container my-5">
+        <div class="card card-custom p-4">
+            <h1 class="text-center mb-4">Buscador de Propiedades en Idealista</h1>
+            <form id="searchForm">
+                <div class="mb-3">
+                    <label for="street" class="form-label">Buscar calle:</label>
+                    <div class="input-group">
+                        <input type="text" id="street" name="street" class="form-control" placeholder="Ej: Calle Gran Vía, Madrid">
+                        <button type="button" id="getCoordinatesButton" class="btn btn-custom">
+                            <i class="bi bi-geo-alt"></i> Obtener Coordenadas
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="center" class="form-label">Coordenadas (lat, lon):</label>
+                    <input type="text" id="center" name="center" class="form-control" placeholder="Ej: 40.4168,-3.7038" required readonly>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="propertyType" class="form-label">Tipo de propiedad:</label>
+                        <select id="propertyType" name="propertyType" class="form-select" required>
+                            <option value="homes">Viviendas</option>
+                            <option value="offices">Oficinas</option>
+                            <option value="premises">Locales</option>
+                            <option value="garages">Garajes</option>
+                            <option value="bedrooms">Habitaciones</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="distance" class="form-label">Distancia (metros):</label>
+                        <input type="number" id="distance" name="distance" class="form-control" placeholder="Ej: 10000" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="operation" class="form-label">Operación:</label>
+                        <select id="operation" name="operation" class="form-select" required>
+                            <option value="sale">Venta</option>
+                            <option value="rent">Alquiler</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="maxPrice" class="form-label">Precio máximo:</label>
+                        <input type="number" id="maxPrice" name="maxPrice" class="form-control" placeholder="Ej: 300000">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="minSize" class="form-label">Tamaño mínimo (m²):</label>
+                    <input type="number" id="minSize" name="minSize" class="form-control" placeholder="Ej: 100">
+                </div>
+                <button type="submit" class="btn btn-custom w-100">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Buscar Propiedades
+                </button>
+            </form>
+        </div>
 
-        <label for="distance">Distancia (metros):</label>
-        <input type="number" id="distance" name="distance" placeholder="Ej: 10000" required>
+        <!-- Resultados de la búsqueda -->
+        <h2 class="mt-5 mb-3">Resultados de la Búsqueda</h2>
+        <div class="card card-custom p-4">
+            <table id="resultsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Dirección</th>
+                        <th>Tipo</th>
+                        <th>Precio</th>
+                        <th>Tamaño (m²)</th>
+                        <th>Habitaciones</th>
+                        <th>Baños</th>
+                        <th>URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los resultados se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        <label for="operation">Operación:</label>
-        <select id="operation" name="operation" required>
-            <option value="sale">Venta</option>
-            <option value="rent">Alquiler</option>
-        </select>
+    <!-- Modal para mostrar imágenes en tamaño completo -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Imagen de la propiedad</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modalImage" src="" class="img-fluid" alt="Imagen de la propiedad">
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <label for="maxPrice">Precio máximo:</label>
-        <input type="number" id="maxPrice" name="maxPrice" placeholder="Ej: 300000">
-
-        <label for="minSize">Tamaño mínimo (m²):</label>
-        <input type="number" id="minSize" name="minSize" placeholder="Ej: 100">
-
-        <button type="submit">Buscar</button>
-    </form>
-
-    <h2>Resultados de la Búsqueda</h2>
-    <table id="resultsTable">
-        <thead>
-            <tr>
-                <th>Dirección</th>
-                <th>Tipo</th>
-                <th>Precio</th>
-                <th>Tamaño (m²)</th>
-                <th>Habitaciones</th>
-                <th>Baños</th>
-                <th>URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Los resultados se insertarán aquí -->
-        </tbody>
-    </table>
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Función para obtener coordenadas de una calle
+        async function getCoordinates(street) {
+            try {
+                const response = await fetch(`http://localhost:3000/search-coordinates?street=${encodeURIComponent(street)}`);
+                if (!response.ok) {
+                    throw new Error("Error al buscar coordenadas.");
+                }
+                const data = await response.json();
+                return data.coordinates;
+            } catch (error) {
+                console.error("Error:", error);
+                alert("No se pudieron obtener las coordenadas. Por favor, inténtalo de nuevo.");
+                return null;
+            }
+        }
+
+        // Evento para el botón "Obtener Coordenadas"
+        document.getElementById("getCoordinatesButton").addEventListener("click", async () => {
+            const street = document.getElementById("street").value;
+            if (!street) {
+                alert("Por favor, ingresa una calle.");
+                return;
+            }
+
+            const coordinates = await getCoordinates(street);
+            if (coordinates) {
+                document.getElementById("center").value = coordinates;
+            }
+        });
+
+        // Evento para el formulario de búsqueda de propiedades
         document.getElementById("searchForm").addEventListener("submit", async (event) => {
             event.preventDefault();
+
+            // Mostrar el spinner de carga
+            const submitButton = event.target.querySelector("button[type='submit']");
+            submitButton.disabled = true;
+            submitButton.querySelector(".spinner-border").style.display = "inline-block";
 
             const formData = new FormData(event.target);
             const searchParams = Object.fromEntries(formData.entries());
@@ -127,6 +277,12 @@
                 data.elementList.forEach(property => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
+                        <td>
+                            ${property.thumbnail ?
+                                `<img src="${property.thumbnail}" class="thumbnail" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="document.getElementById('modalImage').src = '${property.thumbnail}'">` :
+                                "N/A"
+                            }
+                        </td>
                         <td>${property.address || "N/A"}</td>
                         <td>${property.propertyType || "N/A"}</td>
                         <td>${property.price ? `${property.price} €` : "N/A"}</td>
@@ -140,6 +296,10 @@
             } catch (error) {
                 console.error("Error:", error);
                 alert("Error al realizar la búsqueda. Por favor, inténtalo de nuevo.");
+            } finally {
+                // Ocultar el spinner de carga
+                submitButton.disabled = false;
+                submitButton.querySelector(".spinner-border").style.display = "none";
             }
         });
     </script>
