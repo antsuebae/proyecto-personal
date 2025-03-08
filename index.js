@@ -14,16 +14,9 @@ const PORT = 3000;
 app.use(cors({ origin: "*" }));
 app.use(express.json()); // Para parsear JSON en las solicitudes
 
-// Credenciales de Idealista
-const IDEALISTA_API_KEY = "rz2v676jiatynq34z3t3fc0f0yvv1aup";
-const IDEALISTA_SECRET = "PUQe1pSbsa2y";
-const IDEALISTA_OAUTH_URL = "https://api.idealista.com/oauth/token";
-const IDEALISTA_SEARCH_URL = "https://api.idealista.com/3.5/es/search";
-
 // Función para obtener el token de acceso
-async function getAccessToken() {
+async function getAccessToken(credentials) {
     const url = "https://api.idealista.com/oauth/token";
-    const credentials = "cnoydjY3NmppYXR5bnEzNHozdDNmYzBmMHl2djFhdXA6UFVRZTFwU2JzYTJ5"; // Codificado en Base64
 
     const data = new URLSearchParams();
     data.append("grant_type", "client_credentials");
@@ -124,10 +117,10 @@ app.get("/search-coordinates", async (req, res) => {
 // Ruta para manejar la búsqueda
 app.post("/search", async (req, res) => {
     try {
-        
+        const accessToken = await getAccessToken(credentials); // Obtener el accessToken
         const searchParams = req.body; // Obtener los parámetros de búsqueda del cuerpo de la solicitud
 
-        const results = await searchProperties(credentials, searchParams); // Realizar la búsqueda
+        const results = await searchProperties(accessToken, searchParams); // Realizar la búsqueda
         res.json(results); // Enviar los resultados como JSON
     } catch (error) {
         res.status(500).json({ error: "Error al realizar la búsqueda" });
