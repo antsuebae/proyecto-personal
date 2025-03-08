@@ -101,13 +101,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Acerca de</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contacto</a>
+                        <a class="nav-link" href="/favorites.html">Favoritos</a>
                     </li>
                 </ul>
             </div>
@@ -178,6 +172,7 @@
             <table id="resultsTable" class="table table-hover">
                 <thead>
                     <tr>
+                        <th>Favorito</th>
                         <th>Imagen</th>
                         <th>Dirección</th>
                         <th>Tipo</th>
@@ -278,6 +273,11 @@
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td>
+                            <button class="btn btn-sm btn-outline-primary favorite-button" data-property='${JSON.stringify(property)}'>
+                                <i class="bi bi-star"></i> Favorito
+                            </button>
+                        </td>
+                        <td>
                             ${property.thumbnail ?
                                 `<img src="${property.thumbnail}" class="thumbnail" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="document.getElementById('modalImage').src = '${property.thumbnail}'">` :
                                 "N/A"
@@ -302,6 +302,88 @@
                 submitButton.querySelector(".spinner-border").style.display = "none";
             }
         });
+
+        // Evento para el botón de "Favorito"
+        document.addEventListener("click", async (event) => {
+            if (event.target.closest(".favorite-button")) {
+                const button = event.target.closest(".favorite-button");
+                const property = JSON.parse(button.getAttribute("data-property"));
+                const icon = button.querySelector("i");
+
+                try {
+                    if (icon.classList.contains("bi-star")) {
+                        // Añadir a favoritos
+                        const response = await fetch("http://localhost:3000/add-favorite", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(property)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
+                        }
+
+                        icon.classList.remove("bi-star");
+                        icon.classList.add("bi-star-fill");
+                        button.classList.remove("btn-outline-primary");
+                        button.classList.add("btn-primary");
+                    } else {
+                        // Eliminar de favoritos
+                        const response = await fetch("http://localhost:3000/remove-favorite", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ propertyCode: property.propertyCode })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Error: ${response.status} ${response.statusText}`);
+                        }
+
+                        icon.classList.remove("bi-star-fill");
+                        icon.classList.add("bi-star");
+                        button.classList.remove("btn-primary");
+                        button.classList.add("btn-outline-primary");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Error al modificar favoritos. Por favor, inténtalo de nuevo.");
+                }
+            }
+        });
+        // Función para verificar si una propiedad está en favoritos
+        async function checkFavorites() {
+            try {
+                const response = await fetch("http://localhost:3000/favorites");
+                if (!response.ok) {
+                    throw new Error("Error al cargar los favoritos.");
+                }
+                const favorites = await response.json();
+
+                // Recorrer todos los botones de favoritos
+                document.querySelectorAll(".favorite-button").forEach(button => {
+                    const property = JSON.parse(button.getAttribute("data-property"));
+                    const isFavorite = favorites.some(fav => fav.propertyCode === property.propertyCode);
+
+                    // Cambiar el ícono y el estilo del botón si ya está en favoritos
+                    if (isFavorite) {
+                        const icon = button.querySelector("i");
+                        icon.classList.remove("bi-star");
+                        icon.classList.add("bi-star-fill");
+                        button.classList.remove("btn-outline-primary");
+                        button.classList.add("btn-primary");
+                    }
+                });
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Llamar a la función al cargar la página
+        window.onload = checkFavorites;
     </script>
 </body>
 </html>

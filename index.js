@@ -3,6 +3,7 @@ import cors from "cors";
 import axios from "axios";
 import FormData from "form-data";
 import open from "open";
+import fs from "fs";
 import path from "path";
 import 'dotenv/config';
 
@@ -125,6 +126,51 @@ app.post("/search", async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Error al realizar la búsqueda" });
     }
+});
+
+// Ruta al archivo JSON donde se guardarán los favoritos
+const FAVORITES_FILE = path.join(process.cwd(), "favorites.json");
+
+// Cargar favoritos desde el archivo JSON (si existe)
+let favorites = [];
+if (fs.existsSync(FAVORITES_FILE)) {
+    const data = fs.readFileSync(FAVORITES_FILE, "utf-8");
+    favorites = JSON.parse(data);
+}
+
+// Función para guardar los favoritos en el archivo JSON
+function saveFavorites() {
+    fs.writeFileSync(FAVORITES_FILE, JSON.stringify(favorites, null, 2), "utf-8");
+}
+
+// Ruta para añadir una propiedad a favoritos
+app.post("/add-favorite", (req, res) => {
+    const property = req.body;
+
+    // Evitar duplicados
+    if (!favorites.some(fav => fav.propertyCode === property.propertyCode)) {
+        favorites.push(property);
+        saveFavorites(); // Guardar en el archivo JSON
+        res.status(200).json({ message: "Propiedad añadida a favoritos." });
+    } else {
+        res.status(400).json({ message: "La propiedad ya está en favoritos." });
+    }
+});
+
+// Ruta para obtener la lista de favoritos
+app.get("/favorites", (req, res) => {
+    res.json(favorites);
+});
+
+// Ruta para eliminar una propiedad de favoritos
+app.post("/remove-favorite", (req, res) => {
+    const { propertyCode } = req.body;
+
+    // Filtrar la lista de favoritos para eliminar la propiedad
+    favorites = favorites.filter(fav => fav.propertyCode !== propertyCode);
+    saveFavorites(); // Guardar cambios en el archivo JSON
+
+    res.status(200).json({ message: "Propiedad eliminada de favoritos." });
 });
 
 app.use(express.static("public"));
