@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "propertyCode": "107423822",
+    "thumbnail": "https://img4.idealista.com/blur/WEB_LISTING/0/id.pro.es.image.master/a5/ab/21/1314081679.webp",
+    "externalReference": "AVREINA",
+    "numPhotos": 42,
+    "floor": "4",
+    "price": 460000,
+    "priceInfo": {
+      "price": {
+        "amount": 460000,
+        "currencySuffix": "€"
+      }
+    },
+    "propertyType": "flat",
+    "operation": "sale",
+    "size": 187,
+    "exterior": true,
+    "rooms": 5,
+    "bathrooms": 3,
+    "address": "avenida de la Reina Mercedes",
+    "province": "Sevilla",
+    "municipality": "Sevilla",
+    "district": "La Palmera - Los Bermejales",
+    "country": "es",
+    "neighborhood": "Reina Mercedes - Heliópolis",
+    "latitude": 37.3594826,
+    "longitude": -5.9871564,
+    "showAddress": false,
+    "url": "https://www.idealista.com/inmueble/107423822/",
+    "distance": "178",
+    "description": "Vivienda en Av. Reina Mercedes. Este magnífico y amplio piso de 187 m² construidos según catastro. Al entrar, encontrarás un recibidor que da paso a un gran salón con acceso a la terraza. La vivienda dispone de cinco dormitorios y tres baños (entre ellos un dormitorio de servicio con un baño propio). La cocina cuenta con un gran lavadero y acceso independiente. No dude en visitarla y descubrirá todas sus posibilidades. La zona dispone de todo tipo de servicios, junto al campus universitario de Reina Mercedes, colegios, supermercados, centros de salud y transportes. Adjuntamos plano de la vivienda para ver sus posibilidades. El precio de venta del inmueble no incluye el mobiliario. Documento D. I. A. a disposición del consumidor según Decreto 218/2005 Junta de Andalucía.  Para más información puede contactar con nosotros en los teléfonos: – consultar en nuestra web  Si lo prefiere podemos atenderle personalmente en Plaza El Juncal Nº2 o Afán de Ribera Nº102 Informamos a nuestros clientes que el precio de venta no incluye lo siguiente: Impuesto de Transmisiones Patrimoniales, así como otros gastos de la compraventa (gastos de registro de la Propiedad, Notaría, Honorarios de la agencia del comprador, ni de posible financiación).",
+    "hasVideo": false,
+    "status": "good",
+    "newDevelopment": false,
+    "hasLift": true,
+    "priceByArea": 2460,
+    "change": {},
+    "detailedType": {
+      "typology": "flat"
+    },
+    "suggestedTexts": {
+      "subtitle": "Reina Mercedes - Heliópolis, Sevilla",
+      "title": "Piso en avenida de la Reina Mercedes"
+    },
+    "hasPlan": true,
+    "has3DTour": false,
+    "has360": false,
+    "hasStaging": true,
+    "highlight": {
+      "groupDescription": "Top"
+    },
+    "savedAd": {},
+    "notes": [],
+    "topNewDevelopment": false,
+    "topPlus": false
+  }
+]

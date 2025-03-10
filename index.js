@@ -15,6 +15,9 @@ const PORT = 3000;
 app.use(cors({ origin: "*" }));
 app.use(express.json()); // Para parsear JSON en las solicitudes
 
+// Variable global para almacenar los resultados de la búsqueda
+let searchResults = [];
+
 // Función para obtener el token de acceso
 async function getAccessToken(credentials) {
     const url = "https://api.idealista.com/oauth/token";
@@ -72,6 +75,7 @@ async function searchProperties(accessToken, searchParams) {
         throw error;
     }
 }
+
 async function getCoordinates(street) {
     try {
         // Hacer una solicitud a la API de OpenStreetMap Nominatim
@@ -122,10 +126,16 @@ app.post("/search", async (req, res) => {
         const searchParams = req.body; // Obtener los parámetros de búsqueda del cuerpo de la solicitud
 
         const results = await searchProperties(accessToken, searchParams); // Realizar la búsqueda
+        searchResults = results.elementList || []; // Almacenar los resultados en la variable global
         res.json(results); // Enviar los resultados como JSON
     } catch (error) {
         res.status(500).json({ error: "Error al realizar la búsqueda" });
     }
+});
+
+// Ruta para obtener los resultados de la búsqueda
+app.get("/search-results", (req, res) => {
+    res.json(searchResults); // Devolver los resultados almacenados
 });
 
 // Ruta al archivo JSON donde se guardarán los favoritos
