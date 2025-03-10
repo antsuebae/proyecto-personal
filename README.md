@@ -31,7 +31,7 @@ cd proyecto-personal
 ### 🔹 **Método Automático (Recomendado)**  
 Ejecuta el script de instalación según tu sistema operativo:  
 
-- **Linux/macOS(dentro de linux)**:  
+- **Linux/macOS(dentro de linux-mac)**:  
   ```sh
   bash install.sh
   ```
