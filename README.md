@@ -20,7 +20,7 @@ brew install node git                                   # macOS
 
 ### 2️⃣ **Clonar el Repositorio**  
 ```sh
-git clone https://github.com/tu-usuario/proyecto-personal.git
+git clone https://github.com/antsuebae/proyecto-personal.git
 cd proyecto-personal
 ```
 
